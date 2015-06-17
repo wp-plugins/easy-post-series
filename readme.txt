@@ -50,7 +50,7 @@ You can change the style by adding new CSS rules to your theme's style.css.
 
 = How to change series archive page post order? =
 
-```php
+```
 add_filter( 'wpeps_archive_page_post_order', 'prfx_archive_page_post_order');
 function prfx_archive_page_post_order( $order ) {
 	return $order = 'ASC';
