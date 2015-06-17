@@ -3,7 +3,7 @@
  * Plugin Name: Easy Post Series
  * Plugin URI: https://wordpress.org/plugins/easy-post-series/
  * Description: Create series of posts easily.
- * Version: 1.0
+ * Version: 1.1
  * Author: Yudhistira Mauris
  * Author URI: http://www.yudhistiramauris.com/
  * Text Domain: easy-post-series
@@ -71,12 +71,11 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 		 * Setup constants used throughout the plugin
 		 *
 		 * @since 1.0
-		 * @return void
 		 */
 		public function setup_constants() {			
 			// Plugin version
 			if ( ! defined( 'WPEPS_VERSION' ) ) {
-				define( 'WPEPS_VERSION', '1.0' );
+				define( 'WPEPS_VERSION', '1.1' );
 			}
 
 			// Plugin folder path
@@ -99,7 +98,6 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 		 * Load localization file
 		 *
 		 * @since 1.0
-		 * @return void
 		 */
 		public function load_textdomain() {
 			$wpeps_lang_dir = WPEPS_PLUGIN_PATH . 'languages/';
@@ -111,12 +109,12 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 		 * Setup action hooks used throughout the plugin
 		 *
 		 * @since 1.0
-		 * @return void
 		 */
 		private function setup_hooks() {
 			register_activation_hook( WPEPS_PLUGIN_FILE, array( $this, 'on_activation' ) );
 			add_action( 'init', array( $this, 'register_taxonomy_series' ) );			
 			add_filter( 'the_content', array( $this, 'series_post_navigation' ) );
+			add_filter( 'pre_get_posts', array( $this, 'series_archive_page_query' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts_and_styles') );
 			register_deactivation_hook( WPEPS_PLUGIN_FILE, array( $this, 'on_deactivation' ) );
 		}
@@ -125,7 +123,6 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 		 * Run this function during plugin activation
 		 *
 		 * @since 1.0
-		 * @return void
 		 */
 		public function on_activation() {
 			// Call register taxonomy function so that the flush function will work
@@ -137,7 +134,6 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 		 * Run this function during plugin deactivation
 		 *
 		 * @since 1.0
-		 * @return void
 		 */
 		public function on_deactivation() {
 			flush_rewrite_rules();
@@ -149,7 +145,6 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 		 * Callback function of an action hook, used to register a new taxonomy.
 		 * 
 		 * @since 1.0
-		 * @return void
 		 */
 		public function register_taxonomy_series() {
 			$labels = array(
@@ -169,6 +164,7 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 				'choose_from_most_used'	     => __( '', 'easy-post-series' ),
 				'menu_name'				     => __( 'Series', 'easy-post-series' ),
 			);
+			$labels = apply_filters( 'wpeps_taxonomy_labels', $labels );
 		
 			$args = array(
 				'labels'            => $labels,
@@ -183,9 +179,11 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 				'query_var'         => true,				
 				'capabilities'      => array(),
 			);
-		
-			register_taxonomy( 'series', array( 'post' ), $args );
-		}		
+			$args = apply_filters( 'wpeps_taxonomy_args', $args );
+
+			$taxonomy = apply_filters( 'wpeps_taxonomy', 'series' );
+			register_taxonomy( $taxonomy, array( 'post' ), $args );
+		}
 
 		/**
 		 * Create navigation among posts in a series on single post page
@@ -193,7 +191,7 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 		 * @since 1.0
 		 * @return Display navigation panel on a single post of a series
 		 */
-		public function series_post_navigation( $content ) {			
+		public function series_post_navigation( $content ) {
 			if ( is_singular( 'post' ) && has_term( '', 'series' ) && is_main_query() ) {
 				$terms     = wp_get_post_terms( get_the_ID(), 'series' );
 				$nav = '';
@@ -202,15 +200,20 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 					$term_name = $term->name;
 					$nav_number = (int) $term_key + 1;
 					$nav .= '<nav class="wpeps-series-nav wpeps-series-' . $nav_number . '">';
+					$nav .= apply_filters( 'wpeps_html_before_nav_paragraph', '' );
 					$nav .= '<p>' . sprintf( __( 'This post is part of the series <a href=%1$s>%2$s</a>.', 'easy-post-series' ), $term_url, $term_name  ) . '<a href="#" onclick="return false;" class="wpeps-show-posts">' . __( 'Show All Posts', 'easy-post-series' ) . '</a><a href="#" onclick="return false;" class="wpeps-hide-posts">' . __( 'Hide All Posts', 'easy-post-series' ) . '</a></p>';
+					$nav .= apply_filters( 'wpeps_html_after_nav_paragraph', '' );
 					$nav .= '<ul>';
 					// Get posts of the term
+					$order   = apply_filters( 'wpeps_nav_post_order', 'ASC' );
+					$orderby = apply_filters( 'wpeps_nav_post_orderby', 'post_date' );
+					$taxonomy = apply_filters( 'wpeps_taxonomy', 'series' );
 					$args = array(
-						'order' => 'ASC',
-						'orderby' => 'post_date',
+						'order' => $order,
+						'orderby' => $orderby,
 						'tax_query' => array(
 							array(
-								'taxonomy' => 'series',
+								'taxonomy' => $taxonomy,
 								'field' => 'slug',
 								'terms' => $term->slug,
 							),
@@ -222,6 +225,7 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 						$nav .= '<li>' . sprintf( __( 'Part %1$d: <a href="%2$s">%3$s</a>', 'easy-post-series' ), (int) $key + 1, get_permalink( $post->ID ), $post->post_title ) . '</li>';
 					}					
 					$nav .= '</ul>';
+					$nav .= apply_filters( 'wpeps_html_after_nav_list', '' );
 					$nav .= '</nav>';
 				}				
 				return $nav . $content;				
@@ -229,6 +233,29 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 			return $content;
 		}
 
+		/**
+		 * Provides a way for user to customize taxonomy archive page post order
+		 * 
+		 * @param  object $query Query object from 'pre_get_posts' filter
+		 * @return object        Modified query object
+		 *
+		 * @since  1.1
+		 */
+		public function series_archive_page_query( $query ) {
+			if ( is_tax( 'series' ) ) {
+				$order   = apply_filters( 'wpeps_archive_page_post_order', 'DESC' );
+				$orderby = apply_filters( 'wpeps_archive_page_post_orderby', 'date' );
+				$query->set( 'order', $order );
+				$query->set( 'orderby', $orderby );
+			}
+			return $query;
+		}
+
+		/**
+		 * Load scripts and styles used by the plugin
+		 * 
+		 * @since  1.0
+		 */
 		public function load_scripts_and_styles() {
 			wp_enqueue_script( 'wpeps-scripts', WPEPS_PLUGIN_URL . 'assets/js/scripts.js', array( 'jquery' ), false, false );
 			wp_enqueue_style( 'wpeps-styles', WPEPS_PLUGIN_URL . 'assets/css/styles.css', array(), false );

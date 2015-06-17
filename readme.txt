@@ -2,17 +2,17 @@
 Contributors: maurisrx
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D2ZLXZ8VQKPE2
 Tags: series, group, organize, post,
-Tested up to: 4.1.1
-Stable tag: 1.0
+Tested up to: 4.2.2
+Stable tag: 1.1
 License: GPLv2
 
 Create series of posts easily.
 
 == Description ==
 
-This plugin helps you create a series of posts. It creates a new taxonomy named 'series'. There is no setting needed for this plugin. Once it is installed, assign posts you want to group as a series via post editor.
+This plugin helps you create a series of posts. It creates a new taxonomy named 'series' (can be modified via filter, see FAQ). There is no setting needed for this plugin. Once it is installed, assign posts you want to group as a series via post editor.
 
-The plugin also creates a posts navigation among a series on posts that belong to a certain series. See screenshots for the examples.
+The plugin also creates a posts navigation on posts that belong to a certain series. See screenshots for the examples.
 
 == Installation ==
 
@@ -37,14 +37,12 @@ You can change the style by adding new CSS rules to your theme's style.css.
 == Screenshots ==
 
 1. Add a series to a post
-2. Posts navigation among a series
+2. Posts navigation on a series post
 
 == Changelog ==
 
 = 1.0 =
 * Initial release.
 
-== Upgrade Notice ==
-
-= 1.0 =
-* Initial release.
+= 1.1 =
+* Add new filter hooks so that user can modify the plugin (See FAQ for available hooks)
