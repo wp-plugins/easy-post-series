@@ -30,9 +30,37 @@ or
 
 == Frequently Asked Questions ==
 
-= How do I change the style of post navigation ? =
+= How do I change the style of post navigation? =
 
 You can change the style by adding new CSS rules to your theme's style.css.
+
+= What are available filter hooks? =
+
+- wpeps_languages_directory
+- wpeps_taxonomy_labels
+- wpeps_taxonomy_args
+- wpeps_taxonomy
+- wpeps_html_before_nav_paragraph
+- wpeps_html_after_nav_paragraph
+- wpeps_html_after_nav_list
+- wpeps_nav_post_order
+- wpeps_nav_post_orderby
+- wpeps_archive_page_post_order
+- wpeps_archive_page_post_orderby
+
+= How to change series archive page post order? =
+
+```php
+add_filter( 'wpeps_archive_page_post_order', 'prfx_archive_page_post_order');
+function prfx_archive_page_post_order( $order ) {
+	return $order = 'ASC';
+}
+	
+add_filter( 'wpeps_archive_page_post_orderby', 'prfx_archive_page_post_orderby');
+function prfx_archive_page_post_orderby( $orderby ) {
+	return $orderby = 'date';
+}
+```
 
 == Screenshots ==
 
