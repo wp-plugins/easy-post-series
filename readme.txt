@@ -3,7 +3,7 @@ Contributors: maurisrx
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D2ZLXZ8VQKPE2
 Tags: series, group, organize, post,
 Tested up to: 4.2.2
-Stable tag: 1.1
+Stable tag: 1.1.1
 License: GPLv2
 
 Create series of posts easily.
@@ -48,6 +48,16 @@ You can change the style by adding new CSS rules to your theme's style.css.
 - wpeps_archive_page_post_order
 - wpeps_archive_page_post_orderby
 
+= How to change series taxonomy to something other than 'series'? =
+
+Add the following code to your active theme's functions.php
+`
+add_filter( 'wpeps_taxonomy', 'prfx_series_taxonomy');
+function prfx_series_taxonomy( $taxonomy ) {
+	return $taxonomy = 'taxonomy-name';
+}
+`
+
 = How to change series archive page post order? =
 
 Add the following code to your active theme's functions.php
@@ -74,4 +84,7 @@ function prfx_archive_page_post_orderby( $orderby ) {
 * Initial release.
 
 = 1.1 =
-* Add new filter hooks so that user can modify the plugin (See FAQ for available hooks)
+* Add new filter hooks so that user can modify the plugin (See FAQ for available hooks).
+
+= 1.1.1 =
+* Fix: series post nav only showed max 5 posts.

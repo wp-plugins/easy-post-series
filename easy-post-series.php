@@ -3,7 +3,7 @@
  * Plugin Name: Easy Post Series
  * Plugin URI: https://wordpress.org/plugins/easy-post-series/
  * Description: Create series of posts easily.
- * Version: 1.1
+ * Version: 1.1.1
  * Author: Yudhistira Mauris
  * Author URI: http://www.yudhistiramauris.com/
  * Text Domain: easy-post-series
@@ -75,7 +75,7 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 		public function setup_constants() {			
 			// Plugin version
 			if ( ! defined( 'WPEPS_VERSION' ) ) {
-				define( 'WPEPS_VERSION', '1.1' );
+				define( 'WPEPS_VERSION', '1.1.1' );
 			}
 
 			// Plugin folder path
@@ -211,15 +211,16 @@ if ( ! class_exists( 'Easy_Post_Series' ) ) {
 					$args = array(
 						'order' => $order,
 						'orderby' => $orderby,
+						'posts_per_page' => -1,
 						'tax_query' => array(
 							array(
-								'taxonomy' => $taxonomy,
-								'field' => 'slug',
-								'terms' => $term->slug,
+								'taxonomy'       => $taxonomy,
+								'field'          => 'slug',
+								'terms'          => $term->slug,
 							),
 						),
 					);
-					$posts = get_posts( $args );						
+					$posts = get_posts( $args );
 					// Loop through each post
 					foreach ( $posts as $key => $post ) {
 						$nav .= '<li>' . sprintf( __( 'Part %1$d: <a href="%2$s">%3$s</a>', 'easy-post-series' ), (int) $key + 1, get_permalink( $post->ID ), $post->post_title ) . '</li>';
