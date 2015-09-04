@@ -3,7 +3,7 @@ Contributors: maurisrx
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D2ZLXZ8VQKPE2
 Tags: series, group, organize, post,
 Tested up to: 4.2.2
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2
 
 Create series of posts easily.
@@ -88,3 +88,8 @@ function prfx_archive_page_post_orderby( $orderby ) {
 
 = 1.1.1 =
 * Fix: series post nav only showed max 5 posts.
+
+= 1.1.2 =
+* Fix: CSS styles and JS scripts
+* Fix: use plugin version number in CSS and JS enqueue script
+* Improve: separate navigation ouput function so it can be outputted using a function

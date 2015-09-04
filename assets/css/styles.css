@@ -15,14 +15,12 @@
 	clear: both;
 	display: none;
 	margin: 10px 0 0 0;
-	padding: 0;
+	padding: 0 0 0 25px;
 }
 
 .wpeps-show-posts,
 .wpeps-hide-posts {
 	float: right;
-	font-size: 1.4rem;
-	line-height: 2.9rem;
 	vertical-align: middle;	
 }
 
